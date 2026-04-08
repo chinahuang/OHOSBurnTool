@@ -1,0 +1,23 @@
+# 镜像文件
+images/
+images_from_board/
+gz_cache/
+
+# 压缩包
+*.tar.gz
+*.zip
+
+# 日志
+*.log
+*.console
+
+# Python 缓存
+__pycache__/
+*.pyc
+
+# 其他
+null
+workspace/
+decompile/
+plist.txt
+eth_gmac.ko
