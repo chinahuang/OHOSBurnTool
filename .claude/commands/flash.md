@@ -1,23 +1,29 @@
 执行 Hi3796CV300 全自动烧录流程。
 
+## 前置检查
+
+首先确认 `config.py` 存在于项目根目录。若不存在，提示用户：
+```
+cp config.example.py config.py
+# 然后编辑 config.py 填写 SERIAL_PORT、IMAGES_DIR 等
+```
+
 ## 步骤
 
-1. **检查 COM1 占用**
-   运行以下命令查找占用 COM1 的进程并终止：
-   ```powershell
-   Get-Process | Where-Object { $_.MainWindowTitle -match 'COM1|HiTool|MobaXterm' } | Stop-Process -Force
+1. **检查串口占用**
+   终止已知会占用串口的进程：
+   ```bash
+   taskkill /F /IM MoTTY.exe /IM putty.exe /IM Xshell.exe /IM HiTool.exe 2>/dev/null || true
    ```
-   同时用 taskkill 终止已知串口工具：MoTTY.exe、putty.exe、Xshell.exe、HiTool.exe。
 
 2. **确认镜像目录**
-   检查 `C:\work\hitools\images\` 是否存在 `flash_d.xml` 及各分区镜像文件。
-   列出缺失的文件并提示用户，若 flash_d.xml 不存在则终止。
+   读取 `config.py` 中的 `IMAGES_DIR`，检查目录是否存在、`flash_d.xml` 是否存在。
+   若缺失则终止并提示。
 
 3. **运行烧录脚本**
    ```bash
-   /c/ProgramData/anaconda3/python.exe c:/work/hitools/auto_flash.py
+   python auto_flash.py
    ```
-   在后台运行，持续输出进度。
 
 4. **结果汇报**
    脚本完成后报告：成功/失败分区数、exit code、板子是否已 reset。

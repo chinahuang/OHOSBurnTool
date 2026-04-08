@@ -22,20 +22,18 @@
 import serial, time, sys, os, threading, socket, struct
 import xml.etree.ElementTree as ET, subprocess
 
-# ── 配置 ──────────────────────────────────────────────────────────────────────
-SERIAL_PORT  = 'COM1'
-BAUD         = 115200
-PC_IP        = '192.168.1.2'
-BOARD_IP     = '192.168.1.0'           # HiTool 使用的板子 IP
-BOARD_MAC    = '00:b1:32:e8:23:b3'    # 固定 MAC，避免随机 MAC 问题
-GATEWAY_IP   = '192.168.1.1'
-IMAGES_DIR   = r'C:\work\hitools\images'
-FLASH_XML    = r'C:\work\hitools\images\flash_d.xml'
+# ── 用户配置（修改 config.py，勿直接改此处） ─────────────────────────────────
+try:
+    from config import *
+except ImportError:
+    print('[ERROR] 未找到 config.py，请复制 config.example.py 为 config.py 并按实际配置修改')
+    sys.exit(1)
 
-LOAD_ADDR    = 0x2c000000   # TFTP 下载到此地址（DDR free region 起始）
+# ── 硬件常量（Hi3796CV300 固定值，一般无需修改） ──────────────────────────────
+LOAD_ADDR     = 0x2c000000   # TFTP 下载到此地址（DDR free region 起始）
 RAW_THRESHOLD = 15 * 1024 * 1024   # 超过此大小的文件使用原始分块流程
-CHUNK_SIZE   = 0x2A000000           # 672MB，原始分块大小（加载后最高 0x56000000 < RAM_END=0x72000000）
-ERASE_CHUNK  = 0x10000              # 擦除时单次 mmc write 块数（32MB）
+CHUNK_SIZE    = 0x2A000000   # 672MB，原始分块大小（加载后最高 0x56000000 < RAM_END=0x72000000）
+ERASE_CHUNK   = 0x10000      # 擦除时单次 mmc write 块数（32MB）
 
 # ── 解析分区表（含所有 Sel=1 分区，空 SelectFile = 待擦除） ────────────────────
 def parse_flash_xml(xmlfile):
